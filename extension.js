@@ -47,13 +47,13 @@ class ActivateWindowByTitle {
     #dbus;
 
     constructor() {
+    }
+
+    enable() {
         this.#dbus = Gio.DBusExportedObject.wrapJSObject(
             ActivateWindowByTitleInterface,
             this,
         );
-    }
-
-    enable() {
         this.#dbus.export(
             Gio.DBus.session,
             '/de/lucaswerkmeister/ActivateWindowByTitle',
@@ -64,6 +64,7 @@ class ActivateWindowByTitle {
         this.#dbus.unexport_from_connection(
             Gio.DBus.session,
         );
+        this.#dbus = undefined;
     }
 
     #activateByPredicate(predicate) {
