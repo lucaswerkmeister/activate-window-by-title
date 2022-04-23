@@ -1,0 +1,8 @@
+{
+  "name": "Activate Window By Title",
+  "description": "Expose a D-Bus interface to activate the window with the given title",
+  "uuid": "activate-window-by-title@lucaswerkmeister.de",
+  "shell-version": [
+    "42"
+  ]
+}
