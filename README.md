@@ -34,7 +34,7 @@ Still, the `WM_CLASS` may be useful for activating a certain application regardl
 (e.g. GNOME Terminal does not include an application name in the window title).
 You can see current name and instance strings in Looking Glass (<kbd>Alt</kbd>+<kbd>F2</kbd> `lg`):
 ```js
-global.get_window_actors().map(a => `${a.get_meta_window().get_wm_class()} (${a.get_meta_window().get_wm_class_instance()})`)
+global.get_window_actors().map(a => a.get_meta_window()).map(w => `${w.get_wm_class()} (${w.get_wm_class_instance()})`)
 ```
 
 ## Command line usage
