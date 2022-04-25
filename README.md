@@ -1,6 +1,6 @@
 # Activate Window By Title
 
-This is a Gnome Shell extension to activate (focus, bring to the foreground) a window
+This is a GNOME Shell extension to activate (focus, bring to the foreground) a window
 based on its title (or `WM_CLASS`, see below).
 It exposes a D-Bus interface with methods for this purpose;
 it has no user interface of its own,
@@ -31,7 +31,7 @@ I believe the name is supposed to be more general than the instance,
 but looking at some windows on my system I can’t really tell a difference,
 both components seem mostly the same apart from arbitrary capitalization or punctuation differences.
 Still, the `WM_CLASS` may be useful for activating a certain application regardless of its current window title
-(e.g. Gnome Terminal does not include an application name in the window title).
+(e.g. GNOME Terminal does not include an application name in the window title).
 You can see current name and instance strings in Looking Glass (<kbd>Alt</kbd>+<kbd>F2</kbd> `lg`):
 ```js
 global.get_window_actors().map(a => `${a.get_meta_window().get_wm_class()} (${a.get_meta_window().get_wm_class_instance()})`)
