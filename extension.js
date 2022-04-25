@@ -39,6 +39,14 @@ const ActivateWindowByTitleInterface = `
       <arg name="substring" type="s" direction="in" />
       <arg name="found" type="b" direction="out" />
     </method>
+    <method name="activateByWmClass">
+      <arg name="name" type="s" direction="in" />
+      <arg name="found" type="b" direction="out" />
+    </method>
+    <method name="activateByWmClassInstance">
+      <arg name="instance" type="s" direction="in" />
+      <arg name="found" type="b" direction="out" />
+    </method>
   </interface>
 </node>
 `;
@@ -69,9 +77,8 @@ class ActivateWindowByTitle {
 
     #activateByPredicate(predicate) {
         for (const actor of global.get_window_actors()) {
-            const window = actor.get_meta_window(),
-                title = window.get_title();
-            if (predicate(title)) {
+            const window = actor.get_meta_window();
+            if (predicate(window)) {
                 window.activate(global.get_current_time());
                 return true;
             }
@@ -79,32 +86,50 @@ class ActivateWindowByTitle {
         return false;
     }
 
-    activateByTitle(fullTitle) {
+    #activateByTitlePredicate(predicate) {
         return this.#activateByPredicate(
+            (window) => predicate(window.get_title()),
+        );
+    }
+
+    activateByTitle(fullTitle) {
+        return this.#activateByTitlePredicate(
             (title) => title === fullTitle,
         );
     }
 
     activateByPrefix(prefix) {
-        return this.#activateByPredicate(
+        return this.#activateByTitlePredicate(
             (title) => title.startsWith(prefix),
         );
     }
 
     activateBySuffix(suffix) {
-        return this.#activateByPredicate(
+        return this.#activateByTitlePredicate(
             (title) => title.endsWith(suffix),
         );
     }
 
     activateBySubstring(substring) {
-        return this.#activateByPredicate(
+        return this.#activateByTitlePredicate(
             (title) => title.includes(substring),
         );
     }
 
     // note: we don’t offer activateByRegExp,
     // because that would be vulnerable to ReDoS attacks
+
+    activateByWmClass(name) {
+        return this.#activateByPredicate(
+            (window) => window.get_wm_class() === name,
+        );
+    }
+
+    activateByWmClassInstance(instance) {
+        return this.#activateByPredicate(
+            (window) => window.get_wm_class_instance() === instance,
+        );
+    }
 }
 
 function init() {
