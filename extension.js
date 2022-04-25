@@ -54,9 +54,6 @@ const ActivateWindowByTitleInterface = `
 class ActivateWindowByTitle {
     #dbus;
 
-    constructor() {
-    }
-
     enable() {
         this.#dbus = Gio.DBusExportedObject.wrapJSObject(
             ActivateWindowByTitleInterface,
