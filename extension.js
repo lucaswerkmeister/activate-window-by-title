@@ -84,9 +84,13 @@ class ActivateWindowByTitle {
     }
 
     #activateByTitlePredicate(predicate) {
-        return this.#activateByPredicate(
-            (window) => predicate(window.get_title()),
-        );
+        return this.#activateByPredicate((window) => {
+            const title = window.get_title();
+            if (title === null) {
+                return false;
+            }
+            return predicate(title);
+        });
     }
 
     activateByTitle(fullTitle) {
