@@ -76,10 +76,10 @@ class ActivateWindowByTitle {
         const now = global.get_current_time();
         const workspace = window.get_workspace();
         if (workspace) {
-            workspace.activate(now);
+            workspace.activate_with_focus(window, now);
+        } else {
+            window.activate(now);
         }
-
-        window.activate(now);
     }
 
     #activateByPredicate(predicate) {
