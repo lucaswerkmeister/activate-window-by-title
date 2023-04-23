@@ -76,7 +76,13 @@ class ActivateWindowByTitle {
         for (const actor of global.get_window_actors()) {
             const window = actor.get_meta_window();
             if (predicate(window)) {
-                window.activate(global.get_current_time());
+
+                const workspace = window.get_workspace();
+                if (workspace) {
+                    workspace.activate(global.get_current_time());
+                }
+
+		window.activate(global.get_current_time());
                 return true;
             }
         }
