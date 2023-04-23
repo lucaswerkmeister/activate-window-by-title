@@ -72,6 +72,10 @@ class ActivateWindowByTitle {
         this.#dbus = undefined;
     }
 
+    /**
+     * @param {MetaWindow} window
+     * @see https://gnome.pages.gitlab.gnome.org/mutter/meta/class.Window.html
+     */
     #activate(window) {
         const now = global.get_current_time();
         const workspace = window.get_workspace();
