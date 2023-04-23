@@ -22,6 +22,7 @@ which implements the `de.lucaswerkmeister.ActivateWindowByTitle` interface conta
 Each method takes a single string argument,
 and returns a single boolean indicating whether such a window was found or not.
 Strings are matched case-sensitively.
+Furthermore, activating a window also activates its workspace.
 
 The `WM_CLASS` is originally an X concept, but is available under Wayland as well
 (exposed via `get_wm_class()` and `get_wm_class_instance()` on a `Meta.Window`).
