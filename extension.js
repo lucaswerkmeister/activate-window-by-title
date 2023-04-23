@@ -73,12 +73,13 @@ class ActivateWindowByTitle {
     }
 
     #activate(window) {
+        const now = global.get_current_time();
         const workspace = window.get_workspace();
         if (workspace) {
-            workspace.activate(global.get_current_time());
+            workspace.activate(now);
         }
 
-        window.activate(global.get_current_time());
+        window.activate(now);
     }
 
     #activateByPredicate(predicate) {
