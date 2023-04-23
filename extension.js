@@ -72,17 +72,20 @@ class ActivateWindowByTitle {
         this.#dbus = undefined;
     }
 
+    #activate(window) {
+        const workspace = window.get_workspace();
+        if (workspace) {
+            workspace.activate(global.get_current_time());
+        }
+
+        window.activate(global.get_current_time());
+    }
+
     #activateByPredicate(predicate) {
         for (const actor of global.get_window_actors()) {
             const window = actor.get_meta_window();
             if (predicate(window)) {
-
-                const workspace = window.get_workspace();
-                if (workspace) {
-                    workspace.activate(global.get_current_time());
-                }
-
-		window.activate(global.get_current_time());
+                this.#activate(window);
                 return true;
             }
         }
