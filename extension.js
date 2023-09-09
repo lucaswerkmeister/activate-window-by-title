@@ -16,9 +16,7 @@
  * SPDX-License-Identifier: GPL-2.0-or-later
  */
 
-/* exported init */
-
-const { Gio } = imports.gi;
+import Gio from 'gi://Gio';
 
 const ActivateWindowByTitleInterface = `
 <node>
@@ -51,7 +49,7 @@ const ActivateWindowByTitleInterface = `
 </node>
 `;
 
-class ActivateWindowByTitle {
+export default class ActivateWindowByTitle {
     #dbus;
 
     enable() {
@@ -145,8 +143,4 @@ class ActivateWindowByTitle {
             (window) => window.get_wm_class_instance() === instance,
         );
     }
-}
-
-function init() {
-    return new ActivateWindowByTitle();
 }
