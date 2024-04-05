@@ -1,7 +1,7 @@
 # Activate Window By Title
 
 This is a GNOME Shell extension to activate (focus, bring to the foreground) a window
-based on its title (or `WM_CLASS`, see below).
+based on its title (or `WM_CLASS`/`ID`, see below).
 It exposes a D-Bus interface with methods for this purpose;
 it has no user interface of its own,
 but can be called from the command line or other programs.
@@ -18,6 +18,7 @@ which implements the `de.lucaswerkmeister.ActivateWindowByTitle` interface conta
 - **activateBySubstring**, to activate the window whose title contains the given string
 - **activateByWmClass**, to activate the window with the given full, exact name part of its `WM_CLASS`
 - **activateByWmClassInstance**, to activate the window with the given full, exact instance part of its `WM_CLASS`
+- **activateById**, to activate the window with the given its window ID
 
 Each method takes a single string argument,
 and returns a single boolean indicating whether such a window was found or not.
@@ -37,6 +38,15 @@ You can see current name and instance strings in Looking Glass (<kbd>Alt</kbd>+<
 ```js
 global.get_window_actors().map(a => a.get_meta_window()).map(w => `${w.get_wm_class()} (${w.get_wm_class_instance()})`)
 ```
+
+The window ID lets us target an specific window from a set where their `WM_CLASS` may be the same.
+Again, we can find the window IDs in Looking Glass:
+```js
+global.get_window_actors().map(a => a.get_meta_window()).map(w => `${w.get_wm_class()} (${w.get_id()})`)
+```
+Alternatively, the [Window Calls Extended extension](https://extensions.gnome.org/extension/4974/window-calls-extended/)
+can be used to obtain the window IDs using its `List` method.
+(Due to limitations of the JavaScript `number` type, IDs above ca. 2^54 will not work reliably.)
 
 By default, the extension goes through the windows in the order in which Mutter returns them
 and activates the first one that matches the criterion.

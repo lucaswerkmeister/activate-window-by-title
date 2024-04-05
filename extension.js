@@ -45,6 +45,10 @@ const ActivateWindowByTitleInterface = `
       <arg name="instance" type="s" direction="in" />
       <arg name="found" type="b" direction="out" />
     </method>
+    <method name="activateById">
+      <arg name="id" type="t" direction="in" />
+      <arg name="found" type="b" direction="out" />
+    </method>
     <method name="setSortOrder">
       <arg name="newSortOrder" type="s" direction="in" />
       <arg name="oldSortOrder" type="s" direction="out" />
@@ -190,6 +194,12 @@ export default class ActivateWindowByTitle {
     activateByWmClassInstance(instance) {
         return this.#activateByPredicate(
             (window) => window.get_wm_class_instance() === instance,
+        );
+    }
+
+    activateById(id) {
+        return this.#activateByPredicate(
+            (window) => window.get_id() === id,
         );
     }
 
