@@ -2,10 +2,11 @@
   "uuid": "activate-window-by-title@lucaswerkmeister.de",
   "name": "Activate Window By Title",
   "description": "Expose a D-Bus interface to activate a window by its title or WM_CLASS",
-  "version": 8,
+  "version": 9,
   "shell-version": [
     "45",
-    "46"
+    "46",
+    "47"
   ],
   "url": "https://github.com/lucaswerkmeister/activate-window-by-title"
 }
