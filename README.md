@@ -38,6 +38,31 @@ You can see current name and instance strings in Looking Glass (<kbd>Alt</kbd>+<
 global.get_window_actors().map(a => a.get_meta_window()).map(w => `${w.get_wm_class()} (${w.get_wm_class_instance()})`)
 ```
 
+By default, the extension goes through the windows in the order in which Mutter returns them
+and activates the first one that matches the criterion.
+If you are often working with ambiguous titles and need more control over this,
+you can change the behavior by calling the **setSortOrder** method with one of the following strings:
+
+- *default*: no sorting.
+  This is intended for users who expect the match to be unambiguous anyways,
+  and removes the overhead of sorting the list of windows.
+  As of GNOME 46, it appears to be equivalent to *lowest_user_time* in practice.
+- *lowest_user_time*: sort by ascending [user time](https://gnome.pages.gitlab.gnome.org/mutter/meta/method.Window.get_user_time.html).
+  The user time is updated each time you interact with a window,
+  so the window with the lowest user time will be the one you least recently interacted with.
+- *highest_user_time*: sort by descending user time.
+  This will be the matching window you most recently interacted with.
+- *lowest_window_id*: sort by ascending [window ID](https://gnome.pages.gitlab.gnome.org/mutter/meta/method.Window.get_id.html).
+  Mutter makes few guarantees about the window ID,
+  but it’s usually monotonically increasing (though it [can overflow](https://gitlab.gnome.org/GNOME/mutter/-/blob/a68385a179/src/core/display.c#L3507)),
+  which means the window with the lowest window ID should be the “oldest” one.
+- *highest_window_id*: sort by descending window ID.
+  This will usually be the matching window that was most recently created.
+
+The method also returns the previous sort order, in case you want to restore it later.
+Note that the sort order is currently not persisted anywhere
+(it will start as *default* in each new GNOME Shell session).
+
 ## Command line usage
 
 You can call these methods using your favorite D-Bus command line tool, for example:

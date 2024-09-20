@@ -45,12 +45,24 @@ const ActivateWindowByTitleInterface = `
       <arg name="instance" type="s" direction="in" />
       <arg name="found" type="b" direction="out" />
     </method>
+    <method name="setSortOrder">
+      <arg name="newSortOrder" type="s" direction="in" />
+      <arg name="oldSortOrder" type="s" direction="out" />
+    </method>
   </interface>
 </node>
 `;
 
 export default class ActivateWindowByTitle {
     #dbus;
+    #sortOrder = 'default';
+    static #sortOrders = new Set([
+        'default',
+        'lowest_user_time',
+        'highest_user_time',
+        'lowest_window_id',
+        'highest_window_id',
+    ]);
 
     enable() {
         this.#dbus = Gio.DBusExportedObject.wrapJSObject(
@@ -84,9 +96,46 @@ export default class ActivateWindowByTitle {
         }
     }
 
+    *#getWindows() {
+        const actors = global.get_window_actors();
+
+        if (this.#sortOrder === 'default') {
+            for (const actor of actors) {
+                yield actor.get_meta_window();
+            }
+            return;
+        }
+
+        const windows = actors.map(actor => actor.get_meta_window());
+        let sorter = null;
+
+        switch (this.#sortOrder) {
+            case 'lowest_user_time':
+                sorter = (w1, w2) => w1.get_user_time() - w2.get_user_time();
+                break;
+            case 'highest_user_time':
+                sorter = (w1, w2) => w2.get_user_time() - w1.get_user_time();
+                break;
+            case 'lowest_window_id':
+                sorter = (w1, w2) => w1.get_id() - w2.get_id();
+                break;
+            case 'highest_window_id':
+                sorter = (w1, w2) => w2.get_id() - w1.get_id();
+                break;
+            default:
+                throw new Error(
+                    `Unknown sort order ${this.#sortOrder}, ` +
+                    `expected one of ${[...ActivateWindowByTitle.#sortOrders].join(', ')}`
+                );
+        }
+
+        windows.sort(sorter);
+
+        yield* windows;
+    }
+
     #activateByPredicate(predicate) {
-        for (const actor of global.get_window_actors()) {
-            const window = actor.get_meta_window();
+        for (const window of this.#getWindows()) {
             if (predicate(window)) {
                 this.#activate(window);
                 return true;
@@ -142,5 +191,17 @@ export default class ActivateWindowByTitle {
         return this.#activateByPredicate(
             (window) => window.get_wm_class_instance() === instance,
         );
+    }
+
+    setSortOrder(newSortOrder) {
+        if (!ActivateWindowByTitle.#sortOrders.has(newSortOrder)) {
+            throw new Error(
+                `Unknown sort order ${newSortOrder}, ` +
+                `expected one of ${[...ActivateWindowByTitle.#sortOrders].join(', ')}`
+            );
+        }
+        const oldSortOrder = this.#sortOrder;
+        this.#sortOrder = newSortOrder;
+        return oldSortOrder;
     }
 }
