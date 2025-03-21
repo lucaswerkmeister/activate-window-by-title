@@ -101,6 +101,8 @@ export default class ActivateWindowByTitle {
     }
 
     *#getWindows() {
+        // note: in some future release, this might need to become global.compositor.get_window_actors()
+        // (available since GNOME 48); for now, both seem to work and return the same array
         const actors = global.get_window_actors();
 
         if (this.#sortOrder === 'default') {
