@@ -103,16 +103,25 @@ export default class ActivateWindowByTitle {
     *#getWindows() {
         // note: in some future release, this might need to become global.compositor.get_window_actors()
         // (available since GNOME 48); for now, both seem to work and return the same array
-        const actors = global.get_window_actors();
+        const active_workspace = global.get_workspace_manager().get_active_workspace();
+        const windows = global.get_window_actors().map(actor => actor.get_meta_window());
 
         if (this.#sortOrder === 'default') {
-            for (const actor of actors) {
-                yield actor.get_meta_window();
+            const ordered_windows = [];
+            let active_workspace_count = 0;
+            for (const tmp_window of windows) {
+                if (tmp_window.get_workspace() === active_workspace) {
+                    ordered_windows.splice(active_workspace_count, 0, tmp_window);
+                    ++active_workspace_count;
+                }
+                else {
+                    ordered_windows.push(tmp_window);
+                }
             }
+            yield *ordered_windows;
             return;
         }
 
-        const windows = actors.map(actor => actor.get_meta_window());
         let sorter = null;
 
         switch (this.#sortOrder) {
