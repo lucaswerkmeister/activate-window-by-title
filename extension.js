@@ -53,6 +53,10 @@ const ActivateWindowByTitleInterface = `
       <arg name="newSortOrder" type="s" direction="in" />
       <arg name="oldSortOrder" type="s" direction="out" />
     </method>
+    <method name="setCurrentDesktopFirst">
+      <arg name="newCurrentDesktopFirst" type="b" direction="in" />
+      <arg name="oldCurrentDesktopFirst" type="b" direction="out" />
+    </method>
   </interface>
 </node>
 `;
@@ -60,6 +64,7 @@ const ActivateWindowByTitleInterface = `
 export default class ActivateWindowByTitle {
     #dbus;
     #sortOrder = 'default';
+    #currentDesktopFirst = false;
     static #sortOrders = new Set([
         'default',
         'lowest_user_time',
@@ -107,19 +112,24 @@ export default class ActivateWindowByTitle {
         const windows = global.get_window_actors().map(actor => actor.get_meta_window());
 
         if (this.#sortOrder === 'default') {
-            const ordered_windows = [];
-            let active_workspace_count = 0;
-            for (const tmp_window of windows) {
-                if (tmp_window.get_workspace() === active_workspace) {
-                    ordered_windows.splice(active_workspace_count, 0, tmp_window);
-                    ++active_workspace_count;
+            if (this.#currentDesktopFirst) {
+                const ordered_windows = [];
+                let active_workspace_count = 0;
+                for (const tmp_window of windows) {
+                    if (tmp_window.get_workspace() === active_workspace) {
+                        ordered_windows.splice(active_workspace_count, 0, tmp_window);
+                        ++active_workspace_count;
+                    }
+                    else {
+                        ordered_windows.push(tmp_window);
+                    }
                 }
-                else {
-                    ordered_windows.push(tmp_window);
-                }
+                yield* ordered_windows;
             }
-            yield *ordered_windows;
-            return;
+            else {
+                yield* windows;
+            }
+            return; 
         }
 
         let sorter = null;
@@ -144,6 +154,22 @@ export default class ActivateWindowByTitle {
                 );
         }
 
+        if (this.#currentDesktopFirst) {
+            const raw_sorter = sorter;
+            sorter = function(w1, w2) {
+                const w1_workspace = w1.get_workspace();
+                const w2_workspace = w2.get_workspace();
+                if (w1_workspace !== w2_workspace) {
+                    if (w1_worspace === active_workspace) {
+                        return -1;
+                    }
+                    else if (w2_workspace === active_workspace) {
+                        return 1;
+                    }
+                }
+                return raw_sorter(w1, w2);
+            };
+        }
         windows.sort(sorter);
 
         yield* windows;
@@ -224,5 +250,11 @@ export default class ActivateWindowByTitle {
         const oldSortOrder = this.#sortOrder;
         this.#sortOrder = newSortOrder;
         return oldSortOrder;
+    }
+
+    setCurrentDesktopFirst(newCurrentDesktopFirst) {
+        const oldCurrentDesktopFirst = this.#currentDesktopFirst;
+        this.#currentDesktopFirst = newCurrentDesktopFirst;
+        return oldCurrentDesktopFirst;
     }
 }
