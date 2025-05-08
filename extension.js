@@ -145,20 +145,20 @@ export default class ActivateWindowByTitle {
         }
 
         if (this.#currentDesktopFirst) {
-            const raw_sorter = sorter;
-            const active_workspace = global.get_workspace_manager().get_active_workspace();
+            const rawSorter = sorter;
+            const activeWorkspace = global.get_workspace_manager().get_active_workspace();
             sorter = function(w1, w2) {
-                const w1_workspace = w1.get_workspace();
-                const w2_workspace = w2.get_workspace();
-                if (w1_workspace !== w2_workspace) {
-                    if (w1_workspace === active_workspace) {
+                const w1Workspace = w1.get_workspace();
+                const w2Workspace = w2.get_workspace();
+                if (w1Workspace !== w2Workspace) {
+                    if (w1Workspace === activeWorkspace) {
                         return -1;
                     }
-                    else if (w2_workspace === active_workspace) {
+                    else if (w2Workspace === activeWorkspace) {
                         return 1;
                     }
                 }
-                return raw_sorter(w1, w2);
+                return rawSorter(w1, w2);
             };
         }
         windows.sort(sorter);
