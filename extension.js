@@ -129,7 +129,7 @@ export default class ActivateWindowByTitle {
             else {
                 yield* windows;
             }
-            return; 
+            return;
         }
 
         let sorter = null;
