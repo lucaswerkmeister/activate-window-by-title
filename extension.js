@@ -118,7 +118,7 @@ export default class ActivateWindowByTitle {
             return;
         }
 
-        const windows = global.get_window_actors().map(actor => actor.get_meta_window());
+        const windows = actors.map(actor => actor.get_meta_window());
         let sorter = null;
 
         switch (this.#sortOrder) {
