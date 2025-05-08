@@ -151,7 +151,7 @@ export default class ActivateWindowByTitle {
                 const w1_workspace = w1.get_workspace();
                 const w2_workspace = w2.get_workspace();
                 if (w1_workspace !== w2_workspace) {
-                    if (w1_worspace === active_workspace) {
+                    if (w1_workspace === active_workspace) {
                         return -1;
                     }
                     else if (w2_workspace === active_workspace) {
