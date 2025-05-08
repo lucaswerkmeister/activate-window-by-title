@@ -73,6 +73,10 @@ The method also returns the previous sort order, in case you want to restore it 
 Note that the sort order is currently not persisted anywhere
 (it will start as *default* in each new GNOME Shell session).
 
+Similarly, you can prioritize the windows of the current desktop by calling **setCurrentDesktopFirst** with `true`.
+The default value is `false`.
+Like setSortOrder, it returns its previous value.
+
 ## Command line usage
 
 You can call these methods using your favorite D-Bus command line tool, for example:
