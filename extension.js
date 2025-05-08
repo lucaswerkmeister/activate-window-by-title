@@ -108,30 +108,17 @@ export default class ActivateWindowByTitle {
     *#getWindows() {
         // note: in some future release, this might need to become global.compositor.get_window_actors()
         // (available since GNOME 48); for now, both seem to work and return the same array
-        const active_workspace = global.get_workspace_manager().get_active_workspace();
-        const windows = global.get_window_actors().map(actor => actor.get_meta_window());
+        const actors = global.get_window_actors();
 
-        if (this.#sortOrder === 'default') {
-            if (this.#currentDesktopFirst) {
-                const ordered_windows = [];
-                let active_workspace_count = 0;
-                for (const tmp_window of windows) {
-                    if (tmp_window.get_workspace() === active_workspace) {
-                        ordered_windows.splice(active_workspace_count, 0, tmp_window);
-                        ++active_workspace_count;
-                    }
-                    else {
-                        ordered_windows.push(tmp_window);
-                    }
-                }
-                yield* ordered_windows;
-            }
-            else {
-                yield* windows;
+        if (this.#sortOrder === 'default' && !this.#currentDesktopFirst) {
+            // no sorting
+            for (const actor of actors) {
+                yield actor.get_meta_window();
             }
             return;
         }
 
+        const windows = global.get_window_actors().map(actor => actor.get_meta_window());
         let sorter = null;
 
         switch (this.#sortOrder) {
@@ -147,6 +134,9 @@ export default class ActivateWindowByTitle {
             case 'highest_window_id':
                 sorter = (w1, w2) => w2.get_id() - w1.get_id();
                 break;
+            case 'default':
+                sorter = (w1, w2) => 0;
+                break;
             default:
                 throw new Error(
                     `Unknown sort order ${this.#sortOrder}, ` +
@@ -156,6 +146,7 @@ export default class ActivateWindowByTitle {
 
         if (this.#currentDesktopFirst) {
             const raw_sorter = sorter;
+            const active_workspace = global.get_workspace_manager().get_active_workspace();
             sorter = function(w1, w2) {
                 const w1_workspace = w1.get_workspace();
                 const w2_workspace = w2.get_workspace();
