@@ -37,6 +37,10 @@ const ActivateWindowByTitleInterface = `
       <arg name="substring" type="s" direction="in" />
       <arg name="found" type="b" direction="out" />
     </method>
+    <method name="activateByTitleContainsConditions">
+      <arg name="titleWithConditions" type="s" direction="in" />
+      <arg name="found" type="b" direction="out" />
+    </method>
     <method name="activateByWmClass">
       <arg name="name" type="s" direction="in" />
       <arg name="found" type="b" direction="out" />
@@ -209,6 +213,18 @@ export default class ActivateWindowByTitle {
             (title) => title.includes(substring),
         );
     }
+    
+    activateByTitleContainsConditions(titleWithConditions) {
+        let evenReplace = true;
+        while(titleWithConditions.includes("#")) {
+            titleWithConditions = titleWithConditions.replace("#", evenReplace ? "title.includes(\"" : "\")");
+            evenReplace = !evenReplace;
+        }
+        return this.#activateByTitlePredicate(
+            (title) => eval(titleWithConditions) === true
+        );
+    }
+
 
     // note: we don’t offer activateByRegExp,
     // because that would be vulnerable to ReDoS attacks
